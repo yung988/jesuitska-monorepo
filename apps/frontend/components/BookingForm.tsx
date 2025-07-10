@@ -105,35 +105,37 @@ export default function BookingForm({ roomId, roomName, pricePerNight, maxGuests
 
     try {
       const [firstName, ...lastName] = formData.guest_name.split(' ');
+      
+      // Použijeme API z frontend aplikace místo přímého volání admin API
+      // Import createBooking z '@/lib/services/bookings'
+      const totalPrice = calculateTotalPrice()
+      
+      // Vytvoříme rezervaci s daty hosta
       const bookingData = {
-        guestInfo: {
-            firstName,
-            lastName: lastName.join(' '),
-            email: formData.guest_email,
-            phone: formData.guest_phone
-        },
-        roomTypeId: roomId, 
-        checkInDate: formData.check_in,
-        checkOutDate: formData.check_out,
-        adults: formData.guests_count, 
+        check_in_date: formData.check_in,
+        check_out_date: formData.check_out,
+        adults: formData.guests_count,
         children: 0,
-        specialRequests: formData.message, 
-        breakfastIncluded: false, 
-      }
-
-      const adminApiUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:3001'
-      const response = await fetch(
-        `${adminApiUrl}/api/bookings`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookingData)
+        room_id: roomId,
+        status: 'confirmed',
+        total_amount: totalPrice,
+        notes: formData.message || '',
+        guest: {
+          first_name: firstName,
+          last_name: lastName.join(' ') || firstName,
+          email: formData.guest_email,
+          phone: formData.guest_phone,
+          address: '',
+          city: '',
+          country: 'Česká republika'
         }
-      )
+      }
+      
+      // Importujeme createBooking z lib/services/bookings
+      const { createBooking } = await import('@/lib/services/bookings')
+      await createBooking(bookingData as any) // Použijeme any pro obejití typové kontroly
 
-      if (!response.ok) throw new Error('Chyba při vytváření rezervace')
+      // Rezervace byla úspěšně vytvořena
 
       setSuccess(true)
       setTimeout(() => {

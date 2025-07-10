@@ -1,0 +1,16 @@
+# Task ID: 42
+# Title: Analýza obsazenosti a trendů
+# Status: pending
+# Dependencies: 41
+# Priority: medium
+# Description: Implementace analytických nástrojů pro sledování obsazenosti a trendů
+# Details:
+1. Vytvoření analytických queries
+2. Implementace vizualizací trendů
+3. Výpočet prediktivních metrik
+4. Export do PDF/Excel
+
+# Test Strategy:
+1. Validace analytických výpočtů
+2. Testování exportu
+3. Performance testy

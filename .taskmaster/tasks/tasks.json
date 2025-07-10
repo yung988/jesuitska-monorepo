@@ -1,0 +1,291 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 36,
+        "title": "Integrace Stripe platební brány",
+        "description": "Implementace kompletního platebního systému pomocí Stripe pro zpracování online plateb za rezervace",
+        "details": "1. Instalace Stripe SDK (@stripe/stripe-js, stripe)\n2. Vytvoření payment service pro komunikaci s Stripe API\n3. Implementace webhook endpointu pro zpracování Stripe events\n4. Vytvoření rozhraní pro sledování stavu plateb\n5. Implementace refund workflow přes Stripe\n6. Propojení s rezervačním systémem\n7. Setup Stripe Elements pro bezpečné platební formuláře",
+        "testStrategy": "1. Unit testy payment service\n2. Integrační testy s Stripe test prostředím\n3. E2E testy platebního procesu\n4. Testování error scénářů a refundů\n5. Webhook testování",
+        "priority": "high",
+        "dependencies": [],
+        "status": "deferred",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Základní konfigurace Stripe SDK",
+            "description": "Instalace a nastavení Stripe SDK včetně inicializace klienta a základní konfigurace API klíčů",
+            "dependencies": [],
+            "details": "1. Nainstalovat @stripe/stripe-js a stripe balíčky\n2. Vytvořit konfigurační soubor pro Stripe API klíče\n3. Implementovat inicializační logiku Stripe klienta\n4. Nastavit základní error handling",
+            "status": "pending",
+            "testStrategy": "Unit testy pro ověření správné inicializace Stripe klienta a konfigurace"
+          },
+          {
+            "id": 2,
+            "title": "Implementace Stripe Elements formuláře",
+            "description": "Vytvoření bezpečného platebního formuláře pomocí Stripe Elements pro zadávání platebních údajů",
+            "dependencies": [],
+            "details": "1. Integrovat Stripe Elements komponenty\n2. Vytvořit vlastní styly pro platební formulář\n3. Implementovat validaci formuláře\n4. Přidat zpracování chybových stavů",
+            "status": "pending",
+            "testStrategy": "E2E testy platebního formuláře a integračních testů Stripe Elements"
+          },
+          {
+            "id": 3,
+            "title": "Vytvoření Payment Service",
+            "description": "Implementace service vrstvy pro komunikaci se Stripe API a zpracování platebních operací",
+            "dependencies": [],
+            "details": "1. Vytvořit PaymentService třídu\n2. Implementovat metody pro vytvoření platby\n3. Přidat metody pro získání stavu platby\n4. Implementovat zpracování refundů",
+            "status": "pending",
+            "testStrategy": "Unit testy jednotlivých metod s mock Stripe API"
+          },
+          {
+            "id": 4,
+            "title": "Implementace Webhook handleru",
+            "description": "Vytvoření endpointu pro příjem a zpracování Stripe webhook událostí",
+            "dependencies": [],
+            "details": "1. Vytvořit webhook endpoint\n2. Implementovat verifikaci Stripe podpisu\n3. Zpracovat relevantní typy událostí\n4. Nastavit logování webhook událostí",
+            "status": "pending",
+            "testStrategy": "Integrační testy webhook endpointu s testovacími Stripe událostmi"
+          },
+          {
+            "id": 5,
+            "title": "Integrace s rezervačním systémem",
+            "description": "Propojení Stripe plateb s existujícím rezervačním systémem",
+            "dependencies": [],
+            "details": "1. Upravit model rezervace o platební údaje\n2. Implementovat aktualizaci stavu rezervace podle platby\n3. Přidat platební workflow do rezervačního procesu\n4. Implementovat notifikace o stavu platby",
+            "status": "pending",
+            "testStrategy": "E2E testy kompletního rezervačního procesu s platbou"
+          },
+          {
+            "id": 6,
+            "title": "Implementace administračního rozhraní",
+            "description": "Vytvoření rozhraní pro správu a monitoring plateb v administraci",
+            "dependencies": [],
+            "details": "1. Vytvořit přehled plateb\n2. Implementovat detail platby\n3. Přidat možnost ručního refundu\n4. Implementovat export platebních dat",
+            "status": "pending",
+            "testStrategy": "UI testy administračního rozhraní a integračních testů refund funkcí"
+          }
+        ]
+      },
+      {
+        "id": 37,
+        "title": "Konfigurace email služby",
+        "description": "Nastavení a integrace email služby pro automatické notifikace a potvrzení",
+        "details": "1. Výběr a setup email providera (Resend/SendGrid)\n2. Vytvoření email service\n3. Implementace základních email šablon\n4. Konfigurace SMTP a API klíčů",
+        "testStrategy": "1. Unit testy email service\n2. Testování doručitelnosti emailů\n3. Validace email šablon",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Výběr a implementace email providera",
+            "description": "Analýza a implementace vybraného email providera (Resend/SendGrid) včetně základní konfigurace",
+            "dependencies": [],
+            "details": "1. Porovnat ceny a funkce Resend vs SendGrid\n2. Vytvořit účet u vybraného providera\n3. Instalovat příslušný npm balíček\n4. Nastavit základní konfiguraci v .env souboru",
+            "status": "pending",
+            "testStrategy": "Ověřit úspěšné připojení k API providera pomocí testovacího emailu"
+          },
+          {
+            "id": 2,
+            "title": "Vytvoření email service vrstvy",
+            "description": "Implementace service vrstvy pro práci s emaily včetně základních metod pro odesílání",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Vytvořit EmailService třídu\n2. Implementovat metody pro odesílání různých typů emailů\n3. Přidat error handling\n4. Implementovat retry mechanismus",
+            "status": "pending",
+            "testStrategy": "Unit testy pro EmailService s mock API responzí"
+          },
+          {
+            "id": 3,
+            "title": "Implementace email šablon",
+            "description": "Vytvoření základních email šablon pro různé typy notifikací",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Vytvořit šablonu pro potvrzení registrace\n2. Vytvořit šablonu pro reset hesla\n3. Vytvořit šablonu pro obecné notifikace\n4. Implementovat systém pro dynamické vkládání dat do šablon",
+            "status": "pending",
+            "testStrategy": "Vizuální kontrola vyrenderovaných šablon v různých email klientech"
+          },
+          {
+            "id": 4,
+            "title": "Konfigurace SMTP a produkční nasazení",
+            "description": "Finální konfigurace SMTP, nastavení API klíčů pro produkci a monitoring",
+            "dependencies": [
+              3
+            ],
+            "details": "1. Nastavit SMTP konfiguraci pro produkční prostředí\n2. Implementovat správu API klíčů\n3. Nastavit monitoring odeslaných emailů\n4. Implementovat logování email událostí",
+            "status": "pending",
+            "testStrategy": "End-to-end testy odesílání emailů v produkčním prostředí"
+          }
+        ]
+      },
+      {
+        "id": 38,
+        "title": "Implementace automatických emailových notifikací",
+        "description": "Vytvoření systému pro automatické odesílání emailů při různých událostech",
+        "details": "1. Implementace notifikací pro:\n- Potvrzení rezervace\n- Připomínky před příjezdem\n- Notifikace pro administrátory\n2. Vytvoření queue systému pro odesílání",
+        "testStrategy": "1. Unit testy pro každý typ notifikace\n2. Integrační testy email flow\n3. Testování různých scénářů triggering",
+        "priority": "high",
+        "dependencies": [
+          37
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "Správa a upload reálných fotografií",
+        "description": "Implementace systému pro správu a nahrávání fotografií pokojů a penzionu",
+        "details": "1. Vytvoření upload komponenty pro admin rozhraní\n2. Implementace image processing (optimalizace, resize)\n3. Napojení na Supabase Storage\n4. Správa metadat obrázků",
+        "testStrategy": "1. Testování upload funkcionality\n2. Validace image processing\n3. Testování storage integrace",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 40,
+        "title": "Implementace galerie pokojů",
+        "description": "Vytvoření interaktivní galerie pro zobrazení fotografií pokojů",
+        "details": "1. Implementace lightbox komponenty\n2. Vytvoření thumbnail grid systému\n3. Lazy loading obrázků\n4. Responzivní design galerie",
+        "testStrategy": "1. Unit testy galerie komponenty\n2. Testování responzivity\n3. Performance testy načítání",
+        "priority": "medium",
+        "dependencies": [
+          39
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 41,
+        "title": "Implementace revenue reportů",
+        "description": "Vytvoření systému pro generování a zobrazení finančních reportů",
+        "details": "1. Implementace SQL queries pro agregaci dat\n2. Vytvoření grafových komponent\n3. Implementace filtrů a exportu\n4. Cached queries pro optimalizaci",
+        "testStrategy": "1. Unit testy agregačních funkcí\n2. Validace výpočtů\n3. Performance testy queries",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 42,
+        "title": "Analýza obsazenosti a trendů",
+        "description": "Implementace analytických nástrojů pro sledování obsazenosti a trendů",
+        "details": "1. Vytvoření analytických queries\n2. Implementace vizualizací trendů\n3. Výpočet prediktivních metrik\n4. Export do PDF/Excel",
+        "testStrategy": "1. Validace analytických výpočtů\n2. Testování exportu\n3. Performance testy",
+        "priority": "medium",
+        "dependencies": [
+          41
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 43,
+        "title": "Implementace backup systému",
+        "description": "Vytvoření automatického systému pro zálohování dat",
+        "details": "1. Implementace scheduled backups\n2. Konfigurace Supabase backups\n3. Vytvoření restore procedur\n4. Monitoring backup statusu",
+        "testStrategy": "1. Testování backup procesu\n2. Validace restore funkcí\n3. Monitoring tests",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 44,
+        "title": "Rozšířená validace dat",
+        "description": "Implementace pokročilé validace dat napříč aplikací",
+        "details": "1. Implementace Zod schémat\n2. Vytvoření custom validátorů\n3. Server-side validace\n4. Error handling vylepšení",
+        "testStrategy": "1. Unit testy validátorů\n2. Testování edge cases\n3. E2E validační testy",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 45,
+        "title": "Optimalizace výkonu aplikace",
+        "description": "Implementace výkonnostních vylepšení napříč aplikací",
+        "details": "1. Implementace caching strategie\n2. Optimalizace SQL queries\n3. Code splitting\n4. Bundle size optimalizace",
+        "testStrategy": "1. Performance benchmarking\n2. Lighthouse testy\n3. Load testing",
+        "priority": "low",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 46,
+        "title": "Implementace error tracking",
+        "description": "Nastavení systému pro sledování a reporting chyb",
+        "details": "1. Integrace error tracking služby\n2. Implementace error boundaries\n3. Setup alerting\n4. Error reporting dashboard",
+        "testStrategy": "1. Testování error zachycení\n2. Validace alerting systému\n3. Dashboard funkčnost",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 47,
+        "title": "Implementace API dokumentace",
+        "description": "Vytvoření kompletní dokumentace API endpoints",
+        "details": "1. Setup API documentation tool\n2. Dokumentace všech endpoints\n3. Generování TypeScript typů\n4. Příklady použití",
+        "testStrategy": "1. Validace dokumentace\n2. Testování příkladů\n3. Type generation testy",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 48,
+        "title": "Migrace zbývajících dat",
+        "description": "Dokončení migrace dat ze Strapi do Supabase",
+        "details": "1. Analýza zbývajících dat\n2. Vytvoření migračních skriptů\n3. Validace dat\n4. Cleanup po migraci",
+        "testStrategy": "1. Testování migračních skriptů\n2. Data integrity checks\n3. Rollback testy",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 49,
+        "title": "Security audit a vylepšení",
+        "description": "Provedení bezpečnostního auditu a implementace vylepšení",
+        "details": "1. Security audit současného stavu\n2. Implementace CSRF ochrany\n3. Rate limiting\n4. Security headers",
+        "testStrategy": "1. Penetration testing\n2. Security scan\n3. Vulnerability testing",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 50,
+        "title": "Deployment pipeline optimalizace",
+        "description": "Vylepšení CI/CD pipeline pro spolehlivější nasazení",
+        "details": "1. Optimalizace build procesu\n2. Automatizace deploymentu\n3. Monitoring nasazení\n4. Rollback procedury",
+        "testStrategy": "1. Pipeline testy\n2. Deployment verifikace\n3. Rollback testy",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 51,
+        "title": "Mock platebního rozhraní pro demo účely",
+        "description": "Vytvoření vizuálního mockupu platebního procesu bez skutečné integrace pro demonstraci klientovi, jak bude vypadat platební flow v aplikaci.",
+        "details": "1. Analýza požadovaných kroků platebního procesu\n2. Vytvoření statických UI komponent:\n   - Platební formulář s polemi pro platební kartu\n   - Obrazovka shrnutí objednávky\n   - Potvrzení platby\n   - Error stavy\n3. Implementace mockovaných odpovědí:\n   - Simulace úspěšné platby\n   - Simulace zamítnuté platby\n   - Simulace chybových stavů\n4. Vytvoření demonstračního flow:\n   - Navigace mezi obrazovkami\n   - Stavové indikátory\n   - Loading stavy\n5. Příprava demo dat:\n   - Testovací částky\n   - Ukázkové produkty\n   - Simulované potvrzení objednávky\n6. Implementace základní validace formulářů\n7. Přidání responzivního designu pro mobilní zobrazení\n8. Dokumentace demo limitací a plánovaných rozdílů oproti finální implementaci",
+        "testStrategy": "1. UI/UX testování:\n   - Kontrola všech obrazovek a přechodů\n   - Ověření responzivity na různých zařízeních\n   - Validace formulářových polí\n2. Testování demo scénářů:\n   - Úspěšná platba\n   - Zamítnutá platba\n   - Chybové stavy\n3. Validace uživatelského flow:\n   - Průchod celým procesem\n   - Kontrola srozumitelnosti pro uživatele\n4. Příprava demo scénáře pro klienta\n5. Kontrola konzistence designu s existující aplikací\n6. Ověření správného zobrazení všech stavů a notifikací",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-08T03:24:35.205Z",
+      "updated": "2025-07-08T03:47:50.501Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

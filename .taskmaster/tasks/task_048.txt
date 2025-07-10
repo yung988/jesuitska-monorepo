@@ -1,0 +1,16 @@
+# Task ID: 48
+# Title: Migrace zbývajících dat
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Dokončení migrace dat ze Strapi do Supabase
+# Details:
+1. Analýza zbývajících dat
+2. Vytvoření migračních skriptů
+3. Validace dat
+4. Cleanup po migraci
+
+# Test Strategy:
+1. Testování migračních skriptů
+2. Data integrity checks
+3. Rollback testy

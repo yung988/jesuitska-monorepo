@@ -1,0 +1,141 @@
+# Přehled projektu  
+Pension Jesuitská je kompletní webová aplikace pro správu a prezentaci penzionu ve Znojmě. Projekt se skládá ze dvou hlavních částí: administrátorského rozhraní a veřejného webu. Systém je již 88% hotový s dokončenou migrací na Supabase. Cílem tohoto PRD je dokončit zbývající funkce pro plně produkční nasazení.
+
+# Aktuální stav (88% hotový)  
+✅ **Dokončené funkce**:
+- **Administrátorské rozhraní**: Kompletní správa pokojů, rezervací, hostů, plateb a faktur
+- **Veřejný web**: Plně funkční prezentace penzionu s rezervačním systémem
+- **Rezervační systém**: Kompletní rezervační proces od výběru pokoje po vytvoření rezervace
+- **Správa dostupnosti**: Real-time kontrola dostupnosti pokojů s kalendářem
+- **Supabase backend**: Kompletní databáze s reálnými daty penzionu
+- **Moderní UI/UX**: Responsivní design s Shadcn/UI komponenty
+
+❌ **Zbývající funkce k dokončení**:
+- **Platební systém**: Integrace platební brány (GoPay)
+- **Email notifikace**: Automatické potvrzovací a notifikační emaily
+- **Reálné obrázky**: Nahrazení placeholder obrázků skutečnými fotkami
+- **Pokročilé reporty**: Rozšířené analýzy a export reportů
+- **Systémová vylepšení**: Backup, optimalizace výkonu
+
+# Uživatelská zkušenost  
+## Uživatelské persony
+- **Administrátor penzionu**: Potřebuje přehledné rozhraní pro správu rezervací, pokojů a hostů.
+- **Host penzionu**: Hledá informace o penzionu, dostupné pokoje a možnost rezervace.
+- **Potenciální host**: Prohlíží si nabídku penzionu a zvažuje rezervaci.
+
+## Klíčové uživatelské toky
+- **Rezervace pokoje**: Host si prohlédne dostupné pokoje, vybere termín a vytvoří rezervaci.
+- **Správa rezervací**: Administrátor vidí všechny rezervace, může je upravovat, potvrzovat nebo rušit.
+- **Správa dostupnosti**: Administrátor může nastavit dostupnost pokojů v kalendáři.
+
+# Technická architektura  
+## Systémové komponenty
+- **Frontend aplikace**: Next.js aplikace pro veřejný web
+- **Admin aplikace**: Next.js aplikace pro administrátorské rozhraní
+- **Backend**: Supabase (PostgreSQL databáze + API)
+- **Sdílené balíčky**: Typescript balíčky pro sdílené typy a funkce
+
+## Datové modely
+- **Rooms**: Informace o pokojích (název, popis, cena, kapacita, obrázky)
+- **Reservations**: Rezervace pokojů (termíny, host, pokoj, stav)
+- **Guests**: Informace o hostech (jméno, kontakt, poznámky)
+- **Payments**: Platby za rezervace
+- **Invoices**: Faktury pro hosty
+- **PensionInfo**: Obecné informace o penzionu (kontakt, popis, služby)
+
+## API a integrace
+- **Supabase API**: Nahradí stávající Strapi API pro všechny operace
+- **Supabase Auth**: Autentizace pro administrátorské rozhraní
+- **Sdílené typy**: Typescript typy pro konzistentní práci s daty
+
+## Infrastrukturní požadavky
+- **Hosting**: Vercel pro Next.js aplikace
+- **Databáze**: Supabase (PostgreSQL)
+- **Úložiště**: Supabase Storage pro obrázky a soubory
+
+# Plán dokončení  
+## Prioritní úkoly (HIGH)
+1. **Platební systém**: Integrace Stripe platební brány
+   - Implementace Stripe pro online platby
+   - Sledování stavu plateb v rezervacích
+   - Workflow pro potvrzení platby
+   - Zpracování refundů při stornování
+   
+2. **Email notifikace**: Automatizovaný email systém
+   - Nastavení email služby (Resend/SendGrid)
+   - Šablony pro potvrzení rezervace
+   - Notifikace pro administrátory
+   - Připomínky před příjezdem
+
+## Středně prioritní úkoly (MEDIUM)
+3. **Reálné obrázky**: Nahrazení placeholder obrázků
+   - Nahrazení placeholder obrázků skutečnými fotkami pokojů
+   - Galerie obrázků pro jednotlivé pokoje
+   - Optimalizace obrázků pro web
+   - Upload funkcionalita pro admin
+
+4. **Pokročilé reporty**: Rozšířené analýzy a reporting
+   - Detailní revenue reporty s grafy
+   - Statistiky obsazenosti a trendy
+   - Analýza hostů a vzorců
+   - Export funkcionalita pro reporty
+
+## Nízká priorita (LOW)
+5. **Systémová vylepšení**: Optimalizace a údržba
+   - Backup/restore funkcionalita
+   - Vylepšená validace dat
+   - Komplexnější error handling
+   - Optimalizace výkonu
+
+# Logický řetězec závislostí
+1. **Základní infrastruktura**:
+   - Konfigurace Supabase klienta pro frontend aplikaci
+   - Vytvoření sdílených typů pro data
+   
+2. **API vrstva**:
+   - Implementace základních API funkcí pro práci s pokoji
+   - Implementace API funkcí pro rezervace
+   - Implementace API funkcí pro hosty a informace o penzionu
+   
+3. **Komponenty a stránky**:
+   - Aktualizace komponent pro zobrazení pokojů
+   - Aktualizace rezervačního formuláře
+   - Aktualizace stránek s detaily pokojů a rezervací
+   
+4. **Testování a ladění**:
+   - Testování všech funkcí a komponent
+   - Oprava chyb a ladění výkonu
+
+# Rizika a jejich zmírnění  
+## Technické výzvy
+- **Riziko**: Nekonzistence dat mezi admin a frontend aplikacemi
+  **Zmírnění**: Použití sdílených typů a funkcí v balíčku `shared`
+  
+- **Riziko**: Rozdílná struktura dat mezi Strapi a Supabase
+  **Zmírnění**: Vytvoření adaptérů pro transformaci dat mezi různými formáty
+
+## Určení MVP
+- **Riziko**: Příliš ambiciózní MVP s mnoha funkcemi
+  **Zmírnění**: Zaměření na základní funkce - zobrazení pokojů a rezervační proces
+  
+- **Riziko**: Nedostatečné testování před nasazením
+  **Zmírnění**: Důkladné testování všech klíčových funkcí a uživatelských toků
+
+## Omezení zdrojů
+- **Riziko**: Nedostatek času na kompletní migraci
+  **Zmírnění**: Postupná migrace po částech, začínající nejdůležitějšími funkcemi
+  
+- **Riziko**: Složitost udržování dvou různých backendů během migrace
+  **Zmírnění**: Jasná dokumentace API a postupné nahrazování funkcí
+
+# Dodatek  
+## Výsledky výzkumu
+- Supabase poskytuje lepší škálovatelnost a nižší náklady než Strapi
+- Sdílení typů mezi frontend a admin aplikacemi zlepší konzistenci dat
+- Použití Next.js API routes pro middleware mezi Supabase a frontend aplikací umožní lepší kontrolu nad daty
+
+## Technické specifikace
+- **Next.js**: verze 14.0 nebo vyšší
+- **Supabase**: JS klient v nejnovější verzi
+- **TypeScript**: Striktní typování pro všechny komponenty a funkce
+- **Sdílené balíčky**: Použití pnpm workspace pro správu monorepa 

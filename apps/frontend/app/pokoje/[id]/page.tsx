@@ -16,39 +16,35 @@ import {
   ChevronRight,
   Bed,
   Home,
-  Star
+  Star,
+  CircleDot
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { fetchAPI, getStrapiMediaURL } from "@/lib/api"
+import { getRoom, getRooms } from "@/lib/services/rooms"
 import { HeroBooking } from "@/components/hero-booking"
+import { getRoomImages, getRoomMainImage } from "@/lib/room-images"
 
+// Interface for room data from Supabase
 interface Room {
-  id: number;
-  attributes: {
-    room_number: string;
+  id: string;
+  room_number: string;
+  room_type_id: string;
+  floor: number;
+  status: 'available' | 'occupied' | 'cleaning' | 'maintenance';
+  room_types?: {
+    id: string;
     name: string;
     description?: string;
-    price_per_night: number;
-    capacity: number;
-    amenities?: any;
-    floor?: number;
-    images?: {
-      data?: Array<{
-        id: number;
-        attributes: {
-          url: string;
-          formats?: {
-            large?: { url: string };
-            medium?: { url: string };
-          };
-        };
-      }>;
-    };
+    base_price: number;
+    max_occupancy: number;
+    amenities?: string[];
   };
 }
+
+// Room images are now handled by the centralized configuration
 
 // Mapa ikon pro vybavení
 const amenityIcons: { [key: string]: any } = {
@@ -72,44 +68,46 @@ export default function RoomDetailPage() {
   const roomId = params.id as string
   
   const [room, setRoom] = useState<Room | null>(null)
+  const [similarRooms, setSimilarRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
-    async function fetchRoom() {
+    async function fetchRoomData() {
       try {
-        const response = await fetchAPI(`/rooms/${roomId}?populate=images`)
-        setRoom(response.data)
+        // Fetch the main room
+        const roomData = await getRoom(roomId)
+        setRoom(roomData)
+        
+        // Fetch all rooms to find similar ones
+        const allRooms = await getRooms()
+        // Filter out the current room and get up to 3 similar rooms
+        const similar = allRooms
+          .filter(r => r.id !== roomId)
+          .slice(0, 3)
+        setSimilarRooms(similar)
       } catch (error) {
-        console.error("Error fetching room:", error)
+        console.error("Error fetching room data:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchRoom()
+    fetchRoomData()
   }, [roomId])
 
   const nextImage = () => {
-    if (room?.attributes.images?.data) {
-      setCurrentImageIndex((prev) => 
-        prev === room.attributes.images.data.length - 1 ? 0 : prev + 1
-      )
-    }
+    setCurrentImageIndex((prev) => (prev === (roomImages.length - 1) ? 0 : prev + 1))
   }
 
   const prevImage = () => {
-    if (room?.attributes.images?.data) {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? room.attributes.images.data.length - 1 : prev - 1
-      )
-    }
+    setCurrentImageIndex((prev) => (prev === 0 ? (roomImages.length - 1) : prev - 1))
   }
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-beige"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-500"></div>
       </div>
     )
   }
@@ -127,14 +125,8 @@ export default function RoomDetailPage() {
     )
   }
 
-  const images = room.attributes.images?.data || []
-  const amenitiesArray = room.attributes.amenities 
-    ? (Array.isArray(room.attributes.amenities) 
-        ? room.attributes.amenities 
-        : Object.entries(room.attributes.amenities)
-            .filter(([_, value]) => value)
-            .map(([key]) => key))
-    : []
+  const amenitiesArray = room.room_types?.amenities || []
+  const roomImages = getRoomImages(room.room_number)
 
   return (
     <main className="min-h-screen bg-white">
@@ -156,75 +148,61 @@ export default function RoomDetailPage() {
 
       {/* Hero Gallery */}
       <section className="relative h-[70vh] bg-gray-100">
-        {images.length > 0 ? (
-          <>
-            <Image
-              src={getStrapiMediaURL(images[currentImageIndex].attributes.url) || ''}
-              alt={room.attributes.name}
-              fill
-              className="object-cover"
-              priority
+        <Image
+          src={roomImages[currentImageIndex]}
+          alt={room.room_number}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        
+        {/* Image navigation */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+          onClick={prevImage}
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+          onClick={nextImage}
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
+        
+        {/* Image indicators */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          {roomImages.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentImageIndex 
+                  ? 'bg-white w-8' 
+                  : 'bg-white/50'
+              }`}
+              onClick={() => setCurrentImageIndex(index)}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            
-            {/* Image navigation */}
-            {images.length > 1 && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
-                  onClick={prevImage}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
-                  onClick={nextImage}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </Button>
-                
-                {/* Image indicators */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {images.map((_, index) => (
-                    <button
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentImageIndex 
-                          ? 'bg-white w-8' 
-                          : 'bg-white/50'
-                      }`}
-                      onClick={() => setCurrentImageIndex(index)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Home className="w-16 h-16 text-gray-400" />
-          </div>
-        )}
+          ))}
+        </div>
 
         {/* Room title overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
           <div className="container mx-auto">
             <h1 className="text-4xl md:text-5xl font-serif mb-2">
-              {room.attributes.name}
+              {room.room_types?.name || `Pokoj ${room.room_number}`}
             </h1>
             <div className="flex items-center gap-4">
               <Badge variant="secondary" className="bg-white/20 text-white">
-                {room.attributes.room_number}
+                {room.room_number}
               </Badge>
-              {room.attributes.floor && (
-                <Badge variant="secondary" className="bg-white/20 text-white">
-                  {room.attributes.floor}. patro
-                </Badge>
-              )}
+              <Badge variant="secondary" className="bg-white/20 text-white">
+                {room.floor}. patro
+              </Badge>
             </div>
           </div>
         </div>
@@ -237,12 +215,12 @@ export default function RoomDetailPage() {
             {/* Main content */}
             <div className="lg:col-span-2 space-y-8">
               {/* Description */}
-              {room.attributes.description && (
+              {room.room_types?.description && (
                 <Card>
                   <CardContent className="p-6">
                     <h2 className="text-2xl font-serif mb-4">O pokoji</h2>
                     <p className="text-gray-600 leading-relaxed">
-                      {room.attributes.description}
+                      {room.room_types.description}
                     </p>
                   </CardContent>
                 </Card>
@@ -251,14 +229,14 @@ export default function RoomDetailPage() {
               {/* Amenities */}
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-2xl font-serif mb-6">Vybavení pokoje</h2>
+                  <h2 className="text-2xl font-serif mb-4">Vybavení</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {amenitiesArray.map((amenity: string, index: number) => {
-                      const Icon = amenityIcons[amenity] || Star
+                    {amenitiesArray.map((amenity, index) => {
+                      const IconComponent = amenityIcons[amenity.trim()] || CircleDot
                       return (
-                        <div key={index} className="flex items-center gap-3">
-                          <Icon className="w-5 h-5 text-warm-beige" />
-                          <span className="text-gray-700">{amenity}</span>
+                        <div key={index} className="flex items-center gap-2">
+                          <IconComponent className="h-5 w-5 text-gray-600" />
+                          <span className="text-sm">{amenity.trim()}</span>
                         </div>
                       )
                     })}
@@ -269,87 +247,65 @@ export default function RoomDetailPage() {
               {/* Room details */}
               <Card>
                 <CardContent className="p-6">
-                  <h2 className="text-2xl font-serif mb-6">Detaily pokoje</h2>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Users className="w-5 h-5 text-warm-beige" />
-                        <span className="text-gray-700">Kapacita</span>
-                      </div>
-                      <span className="font-medium">
-                        {room.attributes.capacity} {room.attributes.capacity === 1 ? 'osoba' : room.attributes.capacity < 5 ? 'osoby' : 'osob'}
-                      </span>
+                  <h2 className="text-2xl font-serif mb-4">Detaily pokoje</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Číslo pokoje</p>
+                      <p className="font-medium">{room.room_number}</p>
                     </div>
-                    
-                    <Separator />
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Bed className="w-5 h-5 text-warm-beige" />
-                        <span className="text-gray-700">Typ pokoje</span>
-                      </div>
-                      <span className="font-medium">{room.attributes.room_number}</span>
+                    <div>
+                      <p className="text-sm text-gray-500">Patro</p>
+                      <p className="font-medium">{room.floor}. patro</p>
                     </div>
-                    
-                    {room.attributes.floor && (
-                      <>
-                        <Separator />
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Home className="w-5 h-5 text-warm-beige" />
-                            <span className="text-gray-700">Umístění</span>
-                          </div>
-                          <span className="font-medium">{room.attributes.floor}. patro</span>
-                        </div>
-                      </>
-                    )}
+                    <div>
+                      <p className="text-sm text-gray-500">Kapacita</p>
+                      <p className="font-medium">
+                        {room.room_types?.max_occupancy || 'N/A'} {room.room_types?.max_occupancy === 1 ? 'osoba' : 'osoby'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Typ pokoje</p>
+                      <p className="font-medium">{room.room_types?.name || 'Standardní pokoj'}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Sidebar - Booking */}
-            <div className="lg:sticky lg:top-24">
-              <Card className="shadow-lg">
+            {/* Booking sidebar */}
+            <div>
+              <Card className="sticky top-6">
                 <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <div className="text-3xl font-bold text-dark-gray">
-                      {room.attributes.price_per_night} Kč
-                    </div>
-                    <div className="text-gray-600">za noc</div>
+                  <h3 className="text-xl font-semibold mb-2">Rezervovat pokoj</h3>
+                  <div className="flex items-baseline gap-1 mb-4">
+                    <span className="text-3xl font-bold">{room.room_types?.base_price?.toLocaleString('cs-CZ') || 'N/A'} Kč</span>
+                    <span className="text-gray-500">/ noc</span>
                   </div>
                   
-                  <Separator className="my-6" />
+                  <Button 
+                    asChild
+                    className="w-full mb-4"
+                  >
+                    <Link href={`/rezervace/pokoj/${room.id}`}>
+                      Rezervovat
+                    </Link>
+                  </Button>
                   
-                  <div className="space-y-4">
-                    <div className="text-center text-gray-600 mb-4">
-                      Vyberte termín pobytu
+                  <Separator className="my-4" />
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm">
+                        Max. {room.room_types?.max_occupancy || 'N/A'} {room.room_types?.max_occupancy === 1 ? 'osoba' : 'osoby'}
+                      </span>
                     </div>
-                    
-                    <Button asChild className="w-full" size="lg">
-                      <Link href="/#booking">
-                        Rezervovat nyní
-                      </Link>
-                    </Button>
-                    
-                    <div className="text-center text-sm text-gray-500">
-                      Okamžité potvrzení rezervace
+                    <div className="flex items-center gap-2">
+                      <Bed className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm">
+                        {room.room_types?.name || 'Standardní pokoj'}
+                      </span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Contact */}
-              <Card className="mt-4">
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-4">Potřebujete poradit?</h3>
-                  <div className="space-y-2 text-sm">
-                    <p className="text-gray-600">
-                      Telefon: <a href="tel:+420603830130" className="text-warm-beige hover:underline">+420 603 830 130</a>
-                    </p>
-                    <p className="text-gray-600">
-                      Email: <a href="mailto:info@jesuitska.cz" className="text-warm-beige hover:underline">info@jesuitska.cz</a>
-                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -358,18 +314,40 @@ export default function RoomDetailPage() {
         </div>
       </section>
 
-      {/* Floating booking bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 lg:hidden">
-        <div className="container mx-auto flex items-center justify-between">
-          <div>
-            <div className="text-2xl font-bold">{room.attributes.price_per_night} Kč</div>
-            <div className="text-sm text-gray-600">za noc</div>
+      {/* Similar rooms section */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-serif mb-8 text-center">Další pokoje</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {similarRooms.map((similarRoom) => (
+              <Card key={similarRoom.id} className="overflow-hidden">
+                <div className="relative h-48">
+                  <Image
+                    src={getRoomMainImage(similarRoom.room_number)}
+                    alt={`Pokoj ${similarRoom.room_number}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-1">Pokoj {similarRoom.room_number}</h3>
+                  <p className="text-sm text-gray-500 mb-2">{similarRoom.room_types?.name || 'Standardní pokoj'}</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    asChild
+                    className="w-full"
+                  >
+                    <Link href={`/pokoje/${similarRoom.id}`}>
+                      Zobrazit detail
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-          <Button asChild>
-            <Link href="/#booking">Rezervovat</Link>
-          </Button>
         </div>
-      </div>
+      </section>
     </main>
   )
 }

@@ -92,7 +92,7 @@ export default function Gallery() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="absolute top-4 right-4 rounded-full bg-cream/30 backdrop-blur-sm hover:bg-cream/50 border-none"
+                    className="absolute top-4 right-4 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40"
                     onClick={() => setIsOpen(false)}
                   >
                     <X className="h-5 w-5" />
@@ -103,7 +103,7 @@ export default function Gallery() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="rounded-full bg-cream/30 backdrop-blur-sm hover:bg-cream/50 border-none"
+                      className="rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40"
                       onClick={(e) => {
                         e.stopPropagation()
                         prevImage()
@@ -115,7 +115,7 @@ export default function Gallery() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="rounded-full bg-cream/30 backdrop-blur-sm hover:bg-cream/50 border-none"
+                      className="rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40"
                       onClick={(e) => {
                         e.stopPropagation()
                         nextImage()
@@ -134,7 +134,7 @@ export default function Gallery() {
         <div className="flex justify-center mt-12">
           <Button
             variant="outline"
-            className="rounded-full px-8 py-6 uppercase tracking-widest text-sm border-dark-gray/20 hover:bg-cream/90 hover:border-dark-gray/30"
+            className="rounded-full px-8 py-6 uppercase tracking-widest text-sm border-dark-gray/20 hover:bg-gray-100 hover:border-dark-gray/30"
             onClick={() => {
               setCurrentImage(0)
               setIsOpen(true)

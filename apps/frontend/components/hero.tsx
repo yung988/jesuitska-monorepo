@@ -67,16 +67,14 @@ export default function Hero() {
         <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-4 tracking-wide">
           Pension Jesuitská
         </h1>
-        <p className="text-lg mb-8 text-white/90">
+        <p className="max-w-md text-lg mb-8">
           Pohodlné ubytování v historickém centru Znojma s vinným sklípkem. Založeno 1994.
         </p>
-        <Link href="#intro">
-          <Button
-            variant="outline"
-            className="rounded-full px-8 py-6 uppercase tracking-widest text-sm bg-cream/80 text-dark-gray hover:bg-cream/90"
-          >
-            Více
-          </Button>
+        <Link
+          href="#intro"
+          className="rounded-full bg-white text-dark-gray px-8 py-3 uppercase tracking-widest text-sm hover:bg-gray-200 transition-colors"
+        >
+          Více
         </Link>
       </div>
 
@@ -86,7 +84,7 @@ export default function Hero() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full bg-cream/30 backdrop-blur-sm hover:bg-cream/50 border-none text-white"
+          className="rounded-full bg-white/30 backdrop-blur-sm hover:bg-white/50 text-dark-gray"
           onClick={prevSlide}
         >
           <ChevronLeft className="h-6 w-6" />
@@ -95,7 +93,7 @@ export default function Hero() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full bg-cream/30 backdrop-blur-sm hover:bg-cream/50 border-none text-white"
+          className="rounded-full bg-white/30 backdrop-blur-sm hover:bg-white/50 text-dark-gray"
           onClick={nextSlide}
         >
           <ChevronRight className="h-6 w-6" />

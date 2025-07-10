@@ -1,96 +1,98 @@
-import { fetchAPI } from '../api';
+import { 
+  getReservations as fetchReservations, 
+  getReservation as fetchReservation,
+  createReservation as createNewReservation,
+  updateReservation as updateExistingReservation,
+  cancelReservation as cancelExistingReservation,
+  createGuest
+} from '../api';
 
 export interface Booking {
-  id: number;
-  attributes: {
-    booking_id?: string;
-    guest_name: string;
-    guest_email: string;
-    guest_phone: string;
-    check_in: string;
-    check_out: string;
-    guests_count: number;
-    total_price: number;
-    paid_amount?: number;
-    status: 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled';
-    message?: string;
-    special_requests?: string;
-    payment_method?: 'cash' | 'card' | 'bank_transfer' | 'online';
-    created_by_admin?: boolean;
-    room?: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          room_number: string;
-          price_per_night: number;
-        };
-      };
+  id: string;
+  guest_id: string;
+  room_id: string;
+  check_in_date: string;
+  check_out_date: string;
+  adults: number;
+  children: number;
+  status: 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled';
+  total_amount: number;
+  notes?: string;
+  created_at: string;
+  guests?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+  };
+  rooms?: {
+    id: string;
+    room_number: string;
+    room_types?: {
+      name: string;
+      base_price: number;
     };
-    guest?: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          email: string;
-          phone: string;
-        };
-      };
-    };
-    createdAt: string;
-    updatedAt: string;
   };
 }
 
-export interface BookingsResponse {
-  data: Booking[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+export interface GuestData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  address?: string;
+  city?: string;
+  country?: string;
 }
 
 export interface CreateBookingData {
-  guest_name: string;
-  guest_email: string;
-  guest_phone: string;
-  check_in: string;
-  check_out: string;
-  guests_count: number;
-  total_price: number;
-  room: number;
+  guest_id?: string;
+  room_id: string;
+  check_in_date: string;
+  check_out_date: string;
+  adults: number;
+  children: number;
+  total_amount: number;
   status?: 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled';
-  message?: string;
-  special_requests?: string;
-  payment_method?: 'cash' | 'card' | 'bank_transfer' | 'online';
+  notes?: string;
+  guest?: GuestData; // Volitelný parametr pro vytvoření hosta zároveň s rezervací
 }
 
 /**
  * Get all bookings
  */
-export async function getBookings(): Promise<BookingsResponse> {
-  return fetchAPI('/bookings?populate=*');
+export async function getBookings(): Promise<Booking[]> {
+  return fetchReservations();
 }
 
 /**
  * Get a single booking by ID
  */
-export async function getBooking(id: string): Promise<{ data: Booking }> {
-  return fetchAPI(`/bookings/${id}?populate=*`);
+export async function getBooking(id: string): Promise<Booking> {
+  return fetchReservation(id);
 }
 
 /**
  * Create a new booking
  */
-export async function createBooking(data: CreateBookingData): Promise<{ data: Booking }> {
-  return fetchAPI('/bookings', {
-    method: 'POST',
-    body: JSON.stringify({ data }),
-  });
+export async function createBooking(data: CreateBookingData): Promise<Booking> {
+  // Pokud máme data o hostovi, nejprve vytvoříme hosta
+  if (data.guest && !data.guest_id) {
+    try {
+      const guest = await createGuest(data.guest);
+      data.guest_id = guest.id;
+    } catch (error) {
+      console.error('Error creating guest:', error);
+      throw new Error('Nepodařilo se vytvořit hosta');
+    }
+  }
+  
+  // Odstraníme objekt guest z dat, protože ho nepotřebujeme poslat do API
+  const { guest, ...bookingData } = data;
+  
+  // Vytvoříme rezervaci
+  return createNewReservation(bookingData);
 }
 
 /**
@@ -99,16 +101,13 @@ export async function createBooking(data: CreateBookingData): Promise<{ data: Bo
 export async function updateBooking(
   id: string,
   data: Partial<CreateBookingData>
-): Promise<{ data: Booking }> {
-  return fetchAPI(`/bookings/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({ data }),
-  });
+): Promise<Booking> {
+  return updateExistingReservation(id, data);
 }
 
 /**
  * Cancel a booking
  */
-export async function cancelBooking(id: string): Promise<{ data: Booking }> {
-  return updateBooking(id, { status: 'cancelled' });
+export async function cancelBooking(id: string): Promise<Booking> {
+  return cancelExistingReservation(id);
 }

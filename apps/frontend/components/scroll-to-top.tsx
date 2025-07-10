@@ -28,18 +28,18 @@ export function ScrollToTop() {
   }
 
   return (
-    <>
-      {isVisible && (
+    isVisible && (
+      <div className="fixed bottom-8 right-8 z-50">
         <Button
           variant="outline"
           size="icon"
-          className="fixed bottom-8 right-8 z-40 rounded-full bg-cream/80 backdrop-blur-sm hover:bg-cream border-none shadow-md"
           onClick={scrollToTop}
+          className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white border-none shadow-lg transition-all duration-300 hover:scale-110"
         >
-          <ChevronUp className="h-5 w-5" />
-          <span className="sr-only">Zpět nahoru</span>
+          <ChevronUp className="h-6 w-6 text-dark-gray" />
+          <span className="sr-only">Návrat nahoru</span>
         </Button>
-      )}
-    </>
+      </div>
+    )
   )
 }

@@ -36,8 +36,8 @@ export function QuickBookingForm() {
 
   const fetchRooms = async () => {
     try {
-      const response = await getRooms()
-      setRooms(response.data || [])
+      const roomsData = await getRooms()
+      setRooms(roomsData || [])
     } catch (err) {
       console.error('Error fetching rooms:', err)
     }
@@ -53,7 +53,7 @@ export function QuickBookingForm() {
     const checkOut = new Date(formData.check_out)
     const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
     
-    return nights * (room.attributes?.pricePerNight || 0)
+    return nights * (room.room_types?.base_price || 0)
   }
 
   useEffect(() => {
@@ -67,22 +67,30 @@ export function QuickBookingForm() {
     setError(null)
 
     try {
-      const bookingData = {
-        checkIn: formData.check_in,
-        checkOut: formData.check_out,
-        numberOfGuests: formData.guests_count,
-        room: parseInt(formData.room_id),
-        // Pro rychlou rezervaci vytvoříme dočasného hosta
-        guest: {
-          name: formData.guest_name,
-          email: formData.guest_email,
-          phone: formData.guest_phone
-        },
+      // Rozdělíme jméno na křestní jméno a příjmení
+      const [firstName, ...lastName] = formData.guest_name.split(' ')
+      
+      // Vytvoříme rezervaci s daty hosta
+      await createBooking({
+        check_in_date: formData.check_in,
+        check_out_date: formData.check_out,
+        adults: formData.guests_count,
+        children: 0,
+        room_id: formData.room_id,
         status: 'confirmed',
-        totalPrice: formData.total_price
-      }
-
-      await createBooking(bookingData)
+        total_amount: formData.total_price,
+        notes: '',
+        guest: {
+          first_name: firstName,
+          last_name: lastName.join(' ') || firstName,
+          email: formData.guest_email,
+          phone: formData.guest_phone,
+          address: '',
+          city: '',
+          country: 'Česká republika'
+        }
+      })
+      
       setSuccess(true)
       
       // Refresh stránky po 2 sekundách
@@ -169,7 +177,7 @@ export function QuickBookingForm() {
                   <SelectContent>
                     {rooms.map((room) => (
                       <SelectItem key={room.id} value={room.id.toString()}>
-                        {room.attributes?.name} - {room.attributes?.pricePerNight} Kč/noc
+                        {room.room_types?.name || room.room_number} - {room.room_types?.base_price || 0} Kč/noc
                       </SelectItem>
                     ))}
                   </SelectContent>

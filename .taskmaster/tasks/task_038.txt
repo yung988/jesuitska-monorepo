@@ -1,0 +1,17 @@
+# Task ID: 38
+# Title: Implementace automatických emailových notifikací
+# Status: pending
+# Dependencies: 37
+# Priority: high
+# Description: Vytvoření systému pro automatické odesílání emailů při různých událostech
+# Details:
+1. Implementace notifikací pro:
+- Potvrzení rezervace
+- Připomínky před příjezdem
+- Notifikace pro administrátory
+2. Vytvoření queue systému pro odesílání
+
+# Test Strategy:
+1. Unit testy pro každý typ notifikace
+2. Integrační testy email flow
+3. Testování různých scénářů triggering

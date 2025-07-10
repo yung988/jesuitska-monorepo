@@ -1,0 +1,16 @@
+# Task ID: 39
+# Title: Správa a upload reálných fotografií
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Implementace systému pro správu a nahrávání fotografií pokojů a penzionu
+# Details:
+1. Vytvoření upload komponenty pro admin rozhraní
+2. Implementace image processing (optimalizace, resize)
+3. Napojení na Supabase Storage
+4. Správa metadat obrázků
+
+# Test Strategy:
+1. Testování upload funkcionality
+2. Validace image processing
+3. Testování storage integrace

@@ -1,70 +1,54 @@
-import { fetchAPI } from '../api';
+import { 
+  getGuests as fetchGuests, 
+  getGuest as fetchGuest,
+  createGuest as createNewGuest,
+  updateGuest as updateExistingGuest,
+  findGuestByEmail as findGuestByEmailAddress
+} from '../api';
 
 export interface Guest {
-  id: number;
-  documentId: string;
-  firstName: string;
-  lastName: string;
+  id: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address?: string;
   city?: string;
+  postal_code?: string;
   country?: string;
-  postalCode?: string;
-  idNumber?: string;
-  notes?: string;
-  bookings?: any[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GuestsResponse {
-  data: Guest[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+  created_at: string;
 }
 
 export interface CreateGuestData {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address?: string;
   city?: string;
   country?: string;
-  postalCode?: string;
-  idNumber?: string;
-  notes?: string;
+  postal_code?: string;
 }
 
 /**
  * Get all guests
  */
-export async function getGuests(): Promise<GuestsResponse> {
-  return fetchAPI('/guests?populate=*');
+export async function getGuests(): Promise<Guest[]> {
+  return fetchGuests();
 }
 
 /**
  * Get a single guest by ID
  */
-export async function getGuest(id: string): Promise<{ data: Guest }> {
-  return fetchAPI(`/guests/${id}?populate=*`);
+export async function getGuest(id: string): Promise<Guest> {
+  return fetchGuest(id);
 }
 
 /**
  * Create a new guest
  */
-export async function createGuest(data: CreateGuestData): Promise<{ data: Guest }> {
-  return fetchAPI('/guests', {
-    method: 'POST',
-    body: JSON.stringify({ data }),
-  });
+export async function createGuest(data: CreateGuestData): Promise<Guest> {
+  return createNewGuest(data);
 }
 
 /**
@@ -73,16 +57,13 @@ export async function createGuest(data: CreateGuestData): Promise<{ data: Guest 
 export async function updateGuest(
   id: string,
   data: Partial<CreateGuestData>
-): Promise<{ data: Guest }> {
-  return fetchAPI(`/guests/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({ data }),
-  });
+): Promise<Guest> {
+  return updateExistingGuest(id, data);
 }
 
 /**
  * Find guest by email
  */
-export async function findGuestByEmail(email: string): Promise<GuestsResponse> {
-  return fetchAPI(`/guests?filters[email][$eq]=${encodeURIComponent(email)}`);
+export async function findGuestByEmail(email: string): Promise<Guest[]> {
+  return findGuestByEmailAddress(email);
 }

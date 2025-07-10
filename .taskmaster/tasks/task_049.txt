@@ -1,0 +1,16 @@
+# Task ID: 49
+# Title: Security audit a vylepšení
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Provedení bezpečnostního auditu a implementace vylepšení
+# Details:
+1. Security audit současného stavu
+2. Implementace CSRF ochrany
+3. Rate limiting
+4. Security headers
+
+# Test Strategy:
+1. Penetration testing
+2. Security scan
+3. Vulnerability testing

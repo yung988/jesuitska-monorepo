@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { createServerClient } from "@/lib/supabase"
 import { Plus, Bed, Users, Wifi, Tv, Coffee, Car } from "lucide-react"
 import Link from "next/link"
+import { RoomActions } from "@/components/room-actions"
 
 async function getRoomsData() {
   const supabase = createServerClient()
@@ -194,13 +195,17 @@ export default async function RoomsPage() {
                   </div>
                 )}
 
-                <div className="flex space-x-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                    Upravit
+                <div className="flex items-center justify-between pt-2">
+                  <Button 
+                    variant={room.status === "available" ? "default" : "outline"} 
+                    size="sm"
+                    asChild
+                  >
+                    <Link href={`/admin/rooms/${room.id}`}>
+                      {room.status === "available" ? "Rezervovat" : "Detail"}
+                    </Link>
                   </Button>
-                  <Button variant={room.status === "available" ? "default" : "outline"} size="sm" className="flex-1">
-                    {room.status === "available" ? "Rezervovat" : "Detail"}
-                  </Button>
+                  <RoomActions roomId={room.id} roomNumber={room.room_number} />
                 </div>
               </div>
             </CardContent>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { cs } from 'date-fns/locale'
 import { Calendar } from '@/components/ui/calendar'
@@ -17,68 +17,36 @@ import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
+import { getRooms, getAvailableRooms } from '@/lib/services/rooms'
+import { createBooking, CreateBookingData } from '@/lib/services/bookings'
+import { createGuest } from '@/lib/services/guests'
+import { getRoomMainImage } from '@/lib/room-images'
 
-// Mock data pro pokoje - v reálné aplikaci by přišla z API
-const rooms = [
-  {
-    id: 1,
-    name: "POKOJ Č. 1",
-    description: "Dvoulůžkový pokoj s manželskou postelí, vlastním sociálním zařízením",
-    capacity: 2,
-    pricePerNight: 1500,
-    features: ["Terasa", "Lednice", "Rychlovarná konvice", "Wi-Fi", "Okna do dvora"],
-    image: "/images/rooms/pokoj.png",
-    available: true
-  },
-  {
-    id: 2,
-    name: "POKOJ Č. 2",
-    description: "Dvoulůžkový pokoj s oddělenými postelemi",
-    capacity: 3,
-    pricePerNight: 1600,
-    features: ["Výhled na kostel", "Lednice", "Wi-Fi", "Možnost přistýlky"],
-    image: "/images/rooms/pokoj.png",
-    available: true
-  },
-  {
-    id: 3,
-    name: "POKOJ Č. 3",
-    description: "Prostorný dvoulůžkový pokoj s manželskou postelí",
-    capacity: 3,
-    pricePerNight: 1700,
-    features: ["Menší terasa", "Koupelna s vanou", "Wi-Fi", "Možnost přistýlky"],
-    image: "/images/rooms/pokoj.png",
-    available: false
-  },
-  {
-    id: 4,
-    name: "APARTMÁN",
-    description: "Apartmán s manželskou postelí v samostatném pokoji",
-    capacity: 4,
-    pricePerNight: 2500,
-    features: ["Lednice", "Rychlovarná konvice", "Wi-Fi", "Vana pro 2 osoby"],
-    image: "/images/rooms/pokoj.png",
-    available: true
-  },
-  {
-    id: 5,
-    name: "POKOJ Č. 5",
-    description: "Jednolůžkový pokoj s vlastní koupelnou",
-    capacity: 1,
-    pricePerNight: 1200,
-    features: ["Wi-Fi", "Sprchový kout", "Vlastní WC"],
-    image: "/images/rooms/pokoj.png",
-    available: true
-  }
-]
+// Define room type based on the API response
+interface Room {
+  id: string;
+  room_number: string;
+  status: string;
+  floor: number;
+  room_types?: {
+    id: string;
+    name: string;
+    description?: string;
+    base_price: number;
+    max_occupancy: number;
+    amenities?: string[];
+  };
+}
 
 export default function BookingSection() {
   const [checkIn, setCheckIn] = useState<Date>()
   const [checkOut, setCheckOut] = useState<Date>()
   const [guests, setGuests] = useState<string>('2')
   const [showResults, setShowResults] = useState(false)
-  const [selectedRoom, setSelectedRoom] = useState<typeof rooms[0] | null>(null)
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [availableRooms, setAvailableRooms] = useState<Room[]>([])
   const { toast } = useToast()
 
   // Formulářová data pro rezervaci
@@ -89,59 +57,137 @@ export default function BookingSection() {
     message: ''
   })
 
-  const handleSearch = () => {
+  // Fetch all rooms on component mount
+  useEffect(() => {
+    const fetchAllRooms = async () => {
+      try {
+        const roomsData = await getRooms();
+        setRooms(roomsData);
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+        toast({
+          title: "Chyba při načítání pokojů",
+          description: "Nepodařilo se načíst pokoje, zkuste to prosím později.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    fetchAllRooms();
+  }, []);
+
+  const handleSearch = async () => {
     if (checkIn && checkOut) {
-      setIsLoading(true)
-      // Simulace načítání
-      setTimeout(() => {
-        setShowResults(true)
-        setIsLoading(false)
-      }, 1000)
+      setIsLoading(true);
+      try {
+        // Format dates to ISO string (YYYY-MM-DD)
+        const checkInStr = checkIn.toISOString().split('T')[0];
+        const checkOutStr = checkOut.toISOString().split('T')[0];
+        
+        // Fetch available rooms for the selected dates
+        const available = await getAvailableRooms(checkInStr, checkOutStr);
+        console.log('Available rooms from API:', available);
+        console.log('Check-in:', checkInStr, 'Check-out:', checkOutStr);
+        setAvailableRooms(available);
+        setShowResults(true);
+      } catch (error) {
+        console.error('Error fetching available rooms:', error);
+        
+        // Fallback: show all rooms if availability check fails
+        console.log('Falling back to all rooms...');
+        try {
+          const allRooms = await getRooms();
+          console.log('All rooms fallback:', allRooms);
+          setAvailableRooms(allRooms);
+          setShowResults(true);
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError);
+          toast({
+            title: "Chyba při hledání dostupných pokojů",
+            description: "Nepodařilo se ověřit dostupnost, zkuste to prosím později.",
+            variant: "destructive"
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   }
 
-  const calculateTotalPrice = (room: typeof rooms[0]) => {
-    if (!checkIn || !checkOut) return 0
-    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
-    return nights * room.pricePerNight
+  const calculateTotalPrice = (room: Room) => {
+    if (!checkIn || !checkOut || !room.room_types) return 0;
+    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+    return nights * room.room_types.base_price;
   }
 
   const calculateNights = () => {
-    if (!checkIn || !checkOut) return 0
-    return Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
+    if (!checkIn || !checkOut) return 0;
+    return Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
   }
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    if (!selectedRoom || !checkIn || !checkOut) return
+    if (!selectedRoom || !checkIn || !checkOut) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-    // Simulace odeslání rezervace
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // 1. Create guest
+      const guestData = {
+        first_name: bookingData.name.split(' ')[0],
+        last_name: bookingData.name.split(' ').slice(1).join(' ') || '',
+        email: bookingData.email,
+        phone: bookingData.phone
+      };
+      
+      const guest = await createGuest(guestData);
+      
+      // 2. Create booking
+      const bookingPayload: CreateBookingData = {
+        guest_id: guest.id,
+        room_id: selectedRoom.id,
+        check_in_date: checkIn.toISOString().split('T')[0],
+        check_out_date: checkOut.toISOString().split('T')[0],
+        adults: parseInt(guests),
+        children: 0,
+        total_amount: calculateTotalPrice(selectedRoom),
+        status: 'pending',
+        notes: bookingData.message
+      };
+      
+      await createBooking(bookingPayload);
+      
       toast({
         title: "Rezervace úspěšně vytvořena!",
         description: "Potvrzení vám zašleme na email.",
-      })
+      });
       
       // Reset formuláře
-      setSelectedRoom(null)
+      setSelectedRoom(null);
       setBookingData({
         name: '',
         email: '',
         phone: '',
         message: ''
-      })
-      setShowResults(false)
-      setCheckIn(undefined)
-      setCheckOut(undefined)
-    }, 2000)
+      });
+      setShowResults(false);
+      setCheckIn(undefined);
+      setCheckOut(undefined);
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      toast({
+        title: "Chyba při vytváření rezervace",
+        description: "Nepodařilo se vytvořit rezervaci, zkuste to prosím později.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <section id="booking" className="py-24 md:py-32 px-6 md:px-20 bg-gray-50">
+    <section id="booking" className="py-24 md:py-32 px-6 md:px-20 bg-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif tracking-wider uppercase text-center mb-4">
           Rezervace
@@ -257,16 +303,56 @@ export default function BookingSection() {
         {showResults && (
           <div className="max-w-5xl mx-auto">
             <h3 className="text-2xl font-serif mb-6">Dostupné pokoje</h3>
+            <div className="mb-4 text-sm text-gray-600 p-4 bg-gray-100 rounded">
+              <h4 className="font-semibold mb-2">Debugovací informace:</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Celkem nalezeno: {availableRooms.length} pokojů</li>
+                <li>Hledá se pro: {guests} hostů</li>
+                <li>Termín: {checkIn?.toLocaleDateString()} - {checkOut?.toLocaleDateString()}</li>
+                <li>Filtrovány pokoje s kapacitou menší než {guests}</li>
+              </ul>
+            </div>
             <div className="space-y-4">
-              {rooms
-                .filter(room => room.capacity >= parseInt(guests))
-                .map((room) => (
-                  <Card key={room.id} className={cn("overflow-hidden", !room.available && "opacity-60")}>
+              {/* Pokoje vyřazené filtrem kapacity */}
+              {availableRooms.filter(room => {
+                const maxOccupancy = room.room_types?.max_occupancy || 2;
+                return maxOccupancy < parseInt(guests);
+              }).length > 0 && (
+                <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded">
+                  <h4 className="font-semibold mb-2">Vyřazené pokoje (nedostatečná kapacita):</h4>
+                  <ul className="list-disc pl-5">
+                    {availableRooms.filter(room => {
+                      const maxOccupancy = room.room_types?.max_occupancy || 2;
+                      return maxOccupancy < parseInt(guests);
+                    }).map(room => (
+                      <li key={room.id}>
+                        Pokoj {room.room_number} - kapacita: {room.room_types?.max_occupancy || 2} osob 
+                        (potřebujete: {guests} osob)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Dostupné pokoje */}
+              {availableRooms.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Žádné pokoje nebyly nalezeny pro vybrané datum.</p>
+                </div>
+              ) : (
+                availableRooms
+                  .filter(room => {
+                    const maxOccupancy = room.room_types?.max_occupancy || 2; // Default to 2 if not set
+                    console.log(`Room ${room.room_number}: max_occupancy=${maxOccupancy}, guests=${guests}, passes=${maxOccupancy >= parseInt(guests)}`);
+                    return maxOccupancy >= parseInt(guests);
+                  })
+                  .map((room) => (
+                  <Card key={room.id} className="overflow-hidden">
                     <div className="grid md:grid-cols-4 gap-6 p-6">
                       <div className="relative h-48 md:h-full rounded-lg overflow-hidden">
                         <Image
-                          src={room.image}
-                          alt={room.name}
+                          src={getRoomMainImage(room.room_number)}
+                          alt={room.room_number}
                           fill
                           className="object-cover"
                         />
@@ -275,30 +361,30 @@ export default function BookingSection() {
                       <div className="md:col-span-2 space-y-4">
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-xl font-semibold">{room.name}</h4>
-                            <Badge variant={room.available ? "default" : "secondary"}>
-                              {room.available ? "Dostupný" : "Obsazený"}
+                            <h4 className="text-xl font-semibold">{room.room_number}</h4>
+                            <Badge variant={room.status === 'available' ? "default" : "secondary"}>
+                              {room.status === 'available' ? "Dostupný" : "Obsazený"}
                             </Badge>
                           </div>
-                          <p className="text-gray-600">{room.description}</p>
+                          <p className="text-gray-600">{room.room_types?.description || 'Bez popisu'}</p>
                         </div>
                         
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4" />
-                            <span>Max. {room.capacity} {room.capacity === 1 ? 'osoba' : room.capacity < 5 ? 'osoby' : 'osob'}</span>
+                            <span>Max. {room.room_types?.max_occupancy || 0} {room.room_types?.max_occupancy === 1 ? 'osoba' : (room.room_types?.max_occupancy || 0) < 5 ? 'osoby' : 'osob'}</span>
                           </div>
                         </div>
                         
                         <div className="flex flex-wrap gap-2">
-                          {room.features.slice(0, 3).map((feature) => (
+                          {room.room_types?.amenities?.slice(0, 3).map((feature) => (
                             <Badge key={feature} variant="outline" className="text-xs">
                               {feature}
                             </Badge>
                           ))}
-                          {room.features.length > 3 && (
+                          {room.room_types?.amenities && room.room_types.amenities.length > 3 && (
                             <Badge variant="outline" className="text-xs">
-                              +{room.features.length - 3} další
+                              +{room.room_types.amenities.length - 3} další
                             </Badge>
                           )}
                         </div>
@@ -306,7 +392,7 @@ export default function BookingSection() {
                       
                       <div className="flex flex-col justify-between items-end">
                         <div className="text-right">
-                          <p className="text-2xl font-bold">{room.pricePerNight.toLocaleString('cs-CZ')} Kč</p>
+                          <p className="text-2xl font-bold">{(room.room_types?.base_price || 0).toLocaleString('cs-CZ')} Kč</p>
                           <p className="text-sm text-gray-600">za noc</p>
                           {checkIn && checkOut && (
                             <>
@@ -323,15 +409,16 @@ export default function BookingSection() {
                         
                         <Button 
                           onClick={() => setSelectedRoom(room)}
-                          disabled={!room.available}
+                          disabled={room.status !== 'available'}
                           className="mt-4"
                         >
-                          {room.available ? 'Rezervovat' : 'Obsazeno'}
+                          {room.status === 'available' ? 'Rezervovat' : 'Obsazeno'}
                         </Button>
                       </div>
                     </div>
                   </Card>
-                ))}
+                  ))
+              )}
             </div>
           </div>
         )}
@@ -361,7 +448,7 @@ export default function BookingSection() {
                   <CardContent className="space-y-2">
                     <div className="flex justify-between">
                       <span>Pokoj:</span>
-                      <span className="font-semibold">{selectedRoom.name}</span>
+                      <span className="font-semibold">{selectedRoom.room_number}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Příjezd:</span>

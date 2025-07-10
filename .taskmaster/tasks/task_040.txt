@@ -1,0 +1,16 @@
+# Task ID: 40
+# Title: Implementace galerie pokojů
+# Status: pending
+# Dependencies: 39
+# Priority: medium
+# Description: Vytvoření interaktivní galerie pro zobrazení fotografií pokojů
+# Details:
+1. Implementace lightbox komponenty
+2. Vytvoření thumbnail grid systému
+3. Lazy loading obrázků
+4. Responzivní design galerie
+
+# Test Strategy:
+1. Unit testy galerie komponenty
+2. Testování responzivity
+3. Performance testy načítání

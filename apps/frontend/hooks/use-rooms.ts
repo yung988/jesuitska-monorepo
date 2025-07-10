@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { RoomsAPI } from '@shared/api/rooms';
-import type { Room } from '@shared/types';
+import { getAvailableRooms } from '@/lib/api';
 
 export function useAvailableRooms(checkIn: string | null, checkOut: string | null) {
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,11 +15,7 @@ export function useAvailableRooms(checkIn: string | null, checkOut: string | nul
 
       try {
         setLoading(true);
-        
-        // Použití sdíleného RoomsAPI k načtení dostupných pokojů
-        const roomsApi = new RoomsAPI(supabase);
-        const availableRooms = await roomsApi.getAvailable(checkIn, checkOut);
-        
+        const availableRooms = await getAvailableRooms(checkIn, checkOut);
         setRooms(availableRooms || []);
       } catch (err) {
         setError('Nepodařilo se načíst dostupné pokoje');

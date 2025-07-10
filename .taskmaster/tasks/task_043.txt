@@ -1,0 +1,16 @@
+# Task ID: 43
+# Title: Implementace backup systému
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Vytvoření automatického systému pro zálohování dat
+# Details:
+1. Implementace scheduled backups
+2. Konfigurace Supabase backups
+3. Vytvoření restore procedur
+4. Monitoring backup statusu
+
+# Test Strategy:
+1. Testování backup procesu
+2. Validace restore funkcí
+3. Monitoring tests

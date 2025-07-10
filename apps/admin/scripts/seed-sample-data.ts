@@ -136,7 +136,7 @@ async function seedSampleData() {
       },
       {
         guest_id: guestsList[3].id,
-        room_id: roomsList[8].id, // Deluxe Suite
+        room_id: roomsList[7].id, // Last available room
         check_in_date: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 14 days from now
         check_out_date: new Date(today.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 21 days from now
         adults: 2,

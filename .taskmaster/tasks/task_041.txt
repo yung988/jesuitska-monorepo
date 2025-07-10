@@ -1,0 +1,16 @@
+# Task ID: 41
+# Title: Implementace revenue reportů
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Vytvoření systému pro generování a zobrazení finančních reportů
+# Details:
+1. Implementace SQL queries pro agregaci dat
+2. Vytvoření grafových komponent
+3. Implementace filtrů a exportu
+4. Cached queries pro optimalizaci
+
+# Test Strategy:
+1. Unit testy agregačních funkcí
+2. Validace výpočtů
+3. Performance testy queries

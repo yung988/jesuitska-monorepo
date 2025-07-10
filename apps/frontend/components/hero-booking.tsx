@@ -173,7 +173,7 @@ export function HeroBooking() {
           <Button 
             onClick={handleSearch}
             disabled={!date?.from || !date?.to}
-            className="px-8 py-6 bg-warm-beige hover:bg-warm-beige/90 text-dark-gray rounded-xl text-lg font-medium"
+            className="px-8 py-6 bg-white hover:bg-grey text-dark-gray rounded-xl text-lg font-medium"
           >
             REZERVOVAT
           </Button>

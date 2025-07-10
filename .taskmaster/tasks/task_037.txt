@@ -1,0 +1,54 @@
+# Task ID: 37
+# Title: Konfigurace email služby
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Nastavení a integrace email služby pro automatické notifikace a potvrzení
+# Details:
+1. Výběr a setup email providera (Resend/SendGrid)
+2. Vytvoření email service
+3. Implementace základních email šablon
+4. Konfigurace SMTP a API klíčů
+
+# Test Strategy:
+1. Unit testy email service
+2. Testování doručitelnosti emailů
+3. Validace email šablon
+
+# Subtasks:
+## 1. Výběr a implementace email providera [pending]
+### Dependencies: None
+### Description: Analýza a implementace vybraného email providera (Resend/SendGrid) včetně základní konfigurace
+### Details:
+1. Porovnat ceny a funkce Resend vs SendGrid
+2. Vytvořit účet u vybraného providera
+3. Instalovat příslušný npm balíček
+4. Nastavit základní konfiguraci v .env souboru
+
+## 2. Vytvoření email service vrstvy [pending]
+### Dependencies: 37.1
+### Description: Implementace service vrstvy pro práci s emaily včetně základních metod pro odesílání
+### Details:
+1. Vytvořit EmailService třídu
+2. Implementovat metody pro odesílání různých typů emailů
+3. Přidat error handling
+4. Implementovat retry mechanismus
+
+## 3. Implementace email šablon [pending]
+### Dependencies: 37.2
+### Description: Vytvoření základních email šablon pro různé typy notifikací
+### Details:
+1. Vytvořit šablonu pro potvrzení registrace
+2. Vytvořit šablonu pro reset hesla
+3. Vytvořit šablonu pro obecné notifikace
+4. Implementovat systém pro dynamické vkládání dat do šablon
+
+## 4. Konfigurace SMTP a produkční nasazení [pending]
+### Dependencies: 37.3
+### Description: Finální konfigurace SMTP, nastavení API klíčů pro produkci a monitoring
+### Details:
+1. Nastavit SMTP konfiguraci pro produkční prostředí
+2. Implementovat správu API klíčů
+3. Nastavit monitoring odeslaných emailů
+4. Implementovat logování email událostí
+

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(task-master init:*)",
+      "Bash(find:*)",
+      "Bash(task-master:*)"
+    ],
+    "deny": []
+  }
+}

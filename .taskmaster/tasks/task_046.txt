@@ -1,0 +1,16 @@
+# Task ID: 46
+# Title: Implementace error tracking
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Nastavení systému pro sledování a reporting chyb
+# Details:
+1. Integrace error tracking služby
+2. Implementace error boundaries
+3. Setup alerting
+4. Error reporting dashboard
+
+# Test Strategy:
+1. Testování error zachycení
+2. Validace alerting systému
+3. Dashboard funkčnost

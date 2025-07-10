@@ -1,0 +1,16 @@
+# Task ID: 45
+# Title: Optimalizace výkonu aplikace
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Implementace výkonnostních vylepšení napříč aplikací
+# Details:
+1. Implementace caching strategie
+2. Optimalizace SQL queries
+3. Code splitting
+4. Bundle size optimalizace
+
+# Test Strategy:
+1. Performance benchmarking
+2. Lighthouse testy
+3. Load testing

@@ -12,11 +12,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useAvailableRooms } from "@/hooks/use-rooms"
-import { getStrapiMediaURL } from "@/lib/api"
 import { Separator } from "@/components/ui/separator"
+import { getRoomMainImage } from "@/lib/room-images"
 
 interface SelectedRoom {
-  roomId: number;
+  roomId: string;
   guests: number;
   name: string;
   pricePerNight: number;
@@ -44,20 +44,20 @@ function ReservationContent() {
     if (!existingRoom) {
       setSelectedRooms([...selectedRooms, {
         roomId: room.id,
-        guests: Math.min(Number(guests) || 2, room.attributes.capacity),
-        name: room.attributes.name,
-        pricePerNight: room.attributes.price_per_night
+        guests: Math.min(Number(guests) || 2, room.room_types?.max_occupancy || 2),
+        name: room.room_types?.name || room.room_number,
+        pricePerNight: room.room_types?.base_price || 0
       }])
     }
   }
 
   // Remove room from selection
-  const removeRoom = (roomId: number) => {
+  const removeRoom = (roomId: string) => {
     setSelectedRooms(selectedRooms.filter(r => r.roomId !== roomId))
   }
 
   // Update guest count for a room
-  const updateGuestCount = (roomId: number, guests: number) => {
+  const updateGuestCount = (roomId: string, guests: number) => {
     setSelectedRooms(selectedRooms.map(r => 
       r.roomId === roomId ? { ...r, guests } : r
     ))
@@ -140,7 +140,12 @@ function ReservationContent() {
               <Card key={room.id}>
                 <CardHeader className="p-0">
                   <div className="relative h-48 w-full">
-                    <div className="bg-gray-200 h-full w-full rounded-t-lg" />
+                    <Image
+                      src={getRoomMainImage(room.room_number)}
+                      alt={room.room_number}
+                      fill
+                      className="object-cover rounded-t-lg"
+                    />
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -148,7 +153,7 @@ function ReservationContent() {
                   
                   <div className="flex items-center gap-2 mb-4 text-gray-600">
                     <Users className="w-4 h-4" />
-                    <span>Max. {room.room_types?.max_occupancy} {room.room_types?.max_occupancy === 1 ? "osoba" : room.room_types?.max_occupancy < 5 ? "osoby" : "osob"}</span>
+                    <span>Max. {room.room_types?.max_occupancy || 0} {room.room_types?.max_occupancy === 1 ? "osoba" : (room.room_types?.max_occupancy || 0) < 5 ? "osoby" : "osob"}</span>
                   </div>
 
                   {room.room_types?.amenities && (

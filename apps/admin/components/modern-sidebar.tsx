@@ -83,6 +83,7 @@ export function ModernSidebar() {
                     <Link
                       key={item.name}
                       href={item.href}
+                      onClick={() => console.log('Navigation clicked:', item.href)}
                       className={cn(
                         "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors",
                         isActive

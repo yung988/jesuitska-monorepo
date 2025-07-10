@@ -1,0 +1,44 @@
+# Task ID: 51
+# Title: Mock platebního rozhraní pro demo účely
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Vytvoření vizuálního mockupu platebního procesu bez skutečné integrace pro demonstraci klientovi, jak bude vypadat platební flow v aplikaci.
+# Details:
+1. Analýza požadovaných kroků platebního procesu
+2. Vytvoření statických UI komponent:
+   - Platební formulář s polemi pro platební kartu
+   - Obrazovka shrnutí objednávky
+   - Potvrzení platby
+   - Error stavy
+3. Implementace mockovaných odpovědí:
+   - Simulace úspěšné platby
+   - Simulace zamítnuté platby
+   - Simulace chybových stavů
+4. Vytvoření demonstračního flow:
+   - Navigace mezi obrazovkami
+   - Stavové indikátory
+   - Loading stavy
+5. Příprava demo dat:
+   - Testovací částky
+   - Ukázkové produkty
+   - Simulované potvrzení objednávky
+6. Implementace základní validace formulářů
+7. Přidání responzivního designu pro mobilní zobrazení
+8. Dokumentace demo limitací a plánovaných rozdílů oproti finální implementaci
+
+# Test Strategy:
+1. UI/UX testování:
+   - Kontrola všech obrazovek a přechodů
+   - Ověření responzivity na různých zařízeních
+   - Validace formulářových polí
+2. Testování demo scénářů:
+   - Úspěšná platba
+   - Zamítnutá platba
+   - Chybové stavy
+3. Validace uživatelského flow:
+   - Průchod celým procesem
+   - Kontrola srozumitelnosti pro uživatele
+4. Příprava demo scénáře pro klienta
+5. Kontrola konzistence designu s existující aplikací
+6. Ověření správného zobrazení všech stavů a notifikací

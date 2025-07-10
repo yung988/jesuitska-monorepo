@@ -1,46 +1,31 @@
 # Frontend-Backend Integration Guide
 
-This guide explains how to use the Strapi backend with your Next.js frontend.
+This guide explains how to use the Supabase backend with your Next.js frontend.
 
 ## Setup
 
-### 1. Backend Configuration
+### 1. Environment Variables
 
-Make sure your Strapi backend is running:
-
-```bash
-cd /Users/jangajdos/projects/jesuitska/penzion-backend
-npm run develop
-```
-
-The backend will run on `http://localhost:1337`
-
-### 2. Frontend Configuration
-
-The frontend is already configured to connect to the backend. The configuration is in:
-- `.env.local` - Contains the API URLs
-- `lib/api.ts` - Base API configuration
+The frontend is already configured to connect to Supabase. The configuration is in:
+- `.env.local` - Contains the Supabase URLs and keys
+- `lib/supabase.ts` - Base Supabase client configuration
+- `lib/api.ts` - API functions for data access
 - `lib/services/` - Service files for different data types
 
-### 3. Environment Variables
+### 2. Environment Variables
 
 The following environment variables are configured in `.env.local`:
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:1337/api
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
-```
-
-If you need to add an API token for authentication:
-```
-NEXT_PUBLIC_API_TOKEN=your-api-token-here
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 ## Usage
 
 ### Fetching Data
 
-Use the service functions to fetch data from Strapi:
+Use the service functions to fetch data from Supabase:
 
 ```typescript
 import { getRooms } from '@/lib/services/rooms';
@@ -81,35 +66,19 @@ See `components/rooms-list.tsx` for a complete example of how to use the API ser
 4. **Settings Service** (`lib/services/settings.ts`)
    - `getSettings()` - Get pension settings
 
-### Media/Images
-
-To get the full URL for Strapi media files:
-
-```typescript
-import { getStrapiMediaURL } from '@/lib/api';
-
-const imageUrl = getStrapiMediaURL(room.image?.url);
-```
-
 ## Troubleshooting
-
-### CORS Errors
-If you get CORS errors, make sure:
-1. The backend `config/middlewares.js` includes your frontend URL
-2. Both backend and frontend are running
-3. The URLs in `.env.local` are correct
 
 ### API Errors
 Check:
-1. The backend is running (`npm run develop`)
-2. The API endpoints exist in Strapi
-3. The content types have proper permissions set in Strapi admin
+1. The Supabase project is running
+2. The environment variables in `.env.local` are correct
+3. The Supabase tables and RLS policies are properly configured
 
 ### Authentication
-If your API requires authentication:
-1. Generate an API token in Strapi admin panel
-2. Add it to `.env.local` as `NEXT_PUBLIC_API_TOKEN`
-3. The token will be automatically included in API requests
+If you need authentication:
+1. Use the Supabase auth methods in your application
+2. Set up appropriate RLS policies in your Supabase project
+3. Use the authenticated client for authenticated requests
 
 ## Next Steps
 

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 
 export default function Location() {
   return (
-    <section id="location" className="py-24 md:py-32 px-6 md:px-20 bg-cream/50">
+    <section id="location" className="py-24 md:py-32 px-6 md:px-20 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif tracking-wider uppercase text-center mb-4">
           Lokalita

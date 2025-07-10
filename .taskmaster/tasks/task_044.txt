@@ -1,0 +1,16 @@
+# Task ID: 44
+# Title: Rozšířená validace dat
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Implementace pokročilé validace dat napříč aplikací
+# Details:
+1. Implementace Zod schémat
+2. Vytvoření custom validátorů
+3. Server-side validace
+4. Error handling vylepšení
+
+# Test Strategy:
+1. Unit testy validátorů
+2. Testování edge cases
+3. E2E validační testy

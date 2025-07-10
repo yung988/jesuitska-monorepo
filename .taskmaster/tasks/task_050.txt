@@ -1,0 +1,16 @@
+# Task ID: 50
+# Title: Deployment pipeline optimalizace
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Vylepšení CI/CD pipeline pro spolehlivější nasazení
+# Details:
+1. Optimalizace build procesu
+2. Automatizace deploymentu
+3. Monitoring nasazení
+4. Rollback procedury
+
+# Test Strategy:
+1. Pipeline testy
+2. Deployment verifikace
+3. Rollback testy

@@ -18,7 +18,14 @@ export async function GET(request: NextRequest) {
     // Získat všechny typy pokojů
     const { data: roomTypes, error: roomTypesError } = await supabase
       .from("room_types")
-      .select("*")
+      .select(`
+        id,
+        name,
+        description,
+        price_per_night,
+        capacity,
+        amenities
+      `)
       .gte("capacity", adults + children)
 
     if (roomTypesError) throw roomTypesError
@@ -58,6 +65,8 @@ export async function GET(request: NextRequest) {
 
         return {
           ...roomType,
+          base_price: roomType.price_per_night,  // map to expected name
+          max_occupancy: roomType.capacity,      // map to expected name
           available: availableRooms.length > 0,
           availableRooms: availableRooms.length,
           totalRooms: rooms.length,

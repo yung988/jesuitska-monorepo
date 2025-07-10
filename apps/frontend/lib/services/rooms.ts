@@ -1,44 +1,33 @@
-import { fetchAPI } from '../api';
+import { getRooms as fetchRooms, getRoom as fetchRoom, getAvailableRooms as fetchAvailableRooms } from '../api';
 
 export interface Room {
-  id: number;
-  documentId: string;
-  number: string;
+  id: string;
+  room_number: string;
+  room_type_id: string;
   floor: number;
-  name?: string;
-  description?: string;
-  capacity: number;
-  pricePerNight: number;
-  amenities?: string[];
-  images?: any[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface RoomsResponse {
-  data: Room[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
+  status: 'available' | 'occupied' | 'cleaning' | 'maintenance';
+  room_types?: {
+    id: string;
+    name: string;
+    description?: string;
+    base_price: number;
+    max_occupancy: number;
+    amenities?: string[];
   };
 }
 
 /**
  * Get all rooms
  */
-export async function getRooms(): Promise<RoomsResponse> {
-  return fetchAPI('/rooms?populate=*');
+export async function getRooms(): Promise<Room[]> {
+  return fetchRooms();
 }
 
 /**
  * Get a single room by ID
  */
-export async function getRoom(id: string): Promise<{ data: Room }> {
-  return fetchAPI(`/rooms/${id}?populate=*`);
+export async function getRoom(id: string): Promise<Room> {
+  return fetchRoom(id);
 }
 
 /**
@@ -47,8 +36,6 @@ export async function getRoom(id: string): Promise<{ data: Room }> {
 export async function getAvailableRooms(
   checkIn: string,
   checkOut: string
-): Promise<RoomsResponse> {
-  // This would need custom logic in your Strapi backend
-  // For now, returning all rooms
-  return getRooms();
+): Promise<Room[]> {
+  return fetchAvailableRooms(checkIn, checkOut);
 }

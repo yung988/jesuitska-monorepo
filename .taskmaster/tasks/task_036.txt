@@ -1,0 +1,77 @@
+# Task ID: 36
+# Title: Integrace Stripe platební brány
+# Status: deferred
+# Dependencies: None
+# Priority: high
+# Description: Implementace kompletního platebního systému pomocí Stripe pro zpracování online plateb za rezervace
+# Details:
+1. Instalace Stripe SDK (@stripe/stripe-js, stripe)
+2. Vytvoření payment service pro komunikaci s Stripe API
+3. Implementace webhook endpointu pro zpracování Stripe events
+4. Vytvoření rozhraní pro sledování stavu plateb
+5. Implementace refund workflow přes Stripe
+6. Propojení s rezervačním systémem
+7. Setup Stripe Elements pro bezpečné platební formuláře
+
+# Test Strategy:
+1. Unit testy payment service
+2. Integrační testy s Stripe test prostředím
+3. E2E testy platebního procesu
+4. Testování error scénářů a refundů
+5. Webhook testování
+
+# Subtasks:
+## 1. Základní konfigurace Stripe SDK [pending]
+### Dependencies: None
+### Description: Instalace a nastavení Stripe SDK včetně inicializace klienta a základní konfigurace API klíčů
+### Details:
+1. Nainstalovat @stripe/stripe-js a stripe balíčky
+2. Vytvořit konfigurační soubor pro Stripe API klíče
+3. Implementovat inicializační logiku Stripe klienta
+4. Nastavit základní error handling
+
+## 2. Implementace Stripe Elements formuláře [pending]
+### Dependencies: None
+### Description: Vytvoření bezpečného platebního formuláře pomocí Stripe Elements pro zadávání platebních údajů
+### Details:
+1. Integrovat Stripe Elements komponenty
+2. Vytvořit vlastní styly pro platební formulář
+3. Implementovat validaci formuláře
+4. Přidat zpracování chybových stavů
+
+## 3. Vytvoření Payment Service [pending]
+### Dependencies: None
+### Description: Implementace service vrstvy pro komunikaci se Stripe API a zpracování platebních operací
+### Details:
+1. Vytvořit PaymentService třídu
+2. Implementovat metody pro vytvoření platby
+3. Přidat metody pro získání stavu platby
+4. Implementovat zpracování refundů
+
+## 4. Implementace Webhook handleru [pending]
+### Dependencies: None
+### Description: Vytvoření endpointu pro příjem a zpracování Stripe webhook událostí
+### Details:
+1. Vytvořit webhook endpoint
+2. Implementovat verifikaci Stripe podpisu
+3. Zpracovat relevantní typy událostí
+4. Nastavit logování webhook událostí
+
+## 5. Integrace s rezervačním systémem [pending]
+### Dependencies: None
+### Description: Propojení Stripe plateb s existujícím rezervačním systémem
+### Details:
+1. Upravit model rezervace o platební údaje
+2. Implementovat aktualizaci stavu rezervace podle platby
+3. Přidat platební workflow do rezervačního procesu
+4. Implementovat notifikace o stavu platby
+
+## 6. Implementace administračního rozhraní [pending]
+### Dependencies: None
+### Description: Vytvoření rozhraní pro správu a monitoring plateb v administraci
+### Details:
+1. Vytvořit přehled plateb
+2. Implementovat detail platby
+3. Přidat možnost ručního refundu
+4. Implementovat export platebních dat
+

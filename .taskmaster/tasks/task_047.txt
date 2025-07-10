@@ -1,0 +1,16 @@
+# Task ID: 47
+# Title: Implementace API dokumentace
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Vytvoření kompletní dokumentace API endpoints
+# Details:
+1. Setup API documentation tool
+2. Dokumentace všech endpoints
+3. Generování TypeScript typů
+4. Příklady použití
+
+# Test Strategy:
+1. Validace dokumentace
+2. Testování příkladů
+3. Type generation testy

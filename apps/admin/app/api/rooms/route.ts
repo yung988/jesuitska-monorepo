@@ -8,7 +8,13 @@ export async function GET() {
     const { data: roomTypes, error } = await supabase
       .from("room_types")
       .select(`
-        *,
+        id,
+        name,
+        description,
+        price_per_night,
+        capacity,
+        amenities,
+        created_at,
         rooms (
           id,
           room_number,
@@ -19,9 +25,11 @@ export async function GET() {
 
     if (error) throw error
 
-    // Přidat počet dostupných pokojů pro každý typ
+    // Přidat počet dostupných pokojů pro každý typ a mapovat sloupce
     const roomTypesWithAvailability = roomTypes.map((roomType) => ({
       ...roomType,
+      base_price: roomType.price_per_night,  // map to expected name
+      max_occupancy: roomType.capacity,      // map to expected name
       totalRooms: roomType.rooms.length,
       availableRooms: roomType.rooms.filter((room: any) => room.status === "available").length,
     }))

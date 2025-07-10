@@ -1,0 +1,121 @@
+# Přehled projektu  
+Pension Jesuitská je webová aplikace pro správu a prezentaci penzionu ve Znojmě. Projekt se skládá ze dvou hlavních částí: administrátorského rozhraní a veřejného webu. Cílem tohoto projektu je sjednotit backend obou aplikací přechodem z API Strapi na Supabase, což zajistí konzistentní práci s daty napříč celou aplikací.
+
+# Základní funkce  
+- **Administrátorské rozhraní**: Umožňuje správu pokojů, rezervací, hostů, plateb a faktur. Již využívá Supabase.
+- **Veřejný web**: Prezentuje penzion, zobrazuje dostupné pokoje a umožňuje rezervace. Aktuálně využívá API Strapi, které bude nahrazeno Supabase.
+- **Rezervační systém**: Umožňuje hostům vytvářet rezervace pokojů na konkrétní termíny.
+- **Správa dostupnosti**: Zobrazuje dostupnost pokojů v kalendáři a umožňuje jejich rezervaci.
+- **Prezentace penzionu**: Zobrazuje informace o penzionu, jeho vybavení a okolí.
+
+# Uživatelská zkušenost  
+## Uživatelské persony
+- **Administrátor penzionu**: Potřebuje přehledné rozhraní pro správu rezervací, pokojů a hostů.
+- **Host penzionu**: Hledá informace o penzionu, dostupné pokoje a možnost rezervace.
+- **Potenciální host**: Prohlíží si nabídku penzionu a zvažuje rezervaci.
+
+## Klíčové uživatelské toky
+- **Rezervace pokoje**: Host si prohlédne dostupné pokoje, vybere termín a vytvoří rezervaci.
+- **Správa rezervací**: Administrátor vidí všechny rezervace, může je upravovat, potvrzovat nebo rušit.
+- **Správa dostupnosti**: Administrátor může nastavit dostupnost pokojů v kalendáři.
+
+# Technická architektura  
+## Systémové komponenty
+- **Frontend aplikace**: Next.js aplikace pro veřejný web
+- **Admin aplikace**: Next.js aplikace pro administrátorské rozhraní
+- **Backend**: Supabase (PostgreSQL databáze + API)
+- **Sdílené balíčky**: Typescript balíčky pro sdílené typy a funkce
+
+## Datové modely
+- **Rooms**: Informace o pokojích (název, popis, cena, kapacita, obrázky)
+- **Reservations**: Rezervace pokojů (termíny, host, pokoj, stav)
+- **Guests**: Informace o hostech (jméno, kontakt, poznámky)
+- **Payments**: Platby za rezervace
+- **Invoices**: Faktury pro hosty
+- **PensionInfo**: Obecné informace o penzionu (kontakt, popis, služby)
+
+## API a integrace
+- **Supabase API**: Nahradí stávající Strapi API pro všechny operace
+- **Supabase Auth**: Autentizace pro administrátorské rozhraní
+- **Sdílené typy**: Typescript typy pro konzistentní práci s daty
+
+## Infrastrukturní požadavky
+- **Hosting**: Vercel pro Next.js aplikace
+- **Databáze**: Supabase (PostgreSQL)
+- **Úložiště**: Supabase Storage pro obrázky a soubory
+
+# Plán vývoje  
+## MVP požadavky
+1. **Migrace API vrstvy**: Nahrazení Strapi API klienta funkcemi pro Supabase
+   - Vytvoření základních funkcí pro práci s pokoji, rezervacemi a hosty
+   - Aktualizace servisních souborů pro komunikaci se Supabase
+   
+2. **Aktualizace komponent**: Úprava komponent, které používaly mock data nebo Strapi API
+   - Komponenty pro zobrazení pokojů
+   - Komponenty pro rezervační formulář
+   - Komponenty pro zobrazení informací o penzionu
+   
+3. **Aktualizace stránek**: Úprava stránek pro zobrazení detailů a rezervací
+   - Stránka s detailem pokoje
+   - Stránka s rezervačním formulářem
+   - Hlavní stránka s přehledem pokojů
+
+## Budoucí vylepšení
+1. **Rozšířené filtrování pokojů**: Možnost filtrovat pokoje podle různých kritérií
+2. **Online platby**: Integrace platební brány pro online platby
+3. **Vícejazyčnost**: Podpora více jazyků pro mezinárodní hosty
+4. **Recenze a hodnocení**: Možnost pro hosty zanechat recenze a hodnocení
+5. **Propojení s rezervačními portály**: Integrace s Booking.com a dalšími portály
+
+# Logický řetězec závislostí
+1. **Základní infrastruktura**:
+   - Konfigurace Supabase klienta pro frontend aplikaci
+   - Vytvoření sdílených typů pro data
+   
+2. **API vrstva**:
+   - Implementace základních API funkcí pro práci s pokoji
+   - Implementace API funkcí pro rezervace
+   - Implementace API funkcí pro hosty a informace o penzionu
+   
+3. **Komponenty a stránky**:
+   - Aktualizace komponent pro zobrazení pokojů
+   - Aktualizace rezervačního formuláře
+   - Aktualizace stránek s detaily pokojů a rezervací
+   
+4. **Testování a ladění**:
+   - Testování všech funkcí a komponent
+   - Oprava chyb a ladění výkonu
+
+# Rizika a jejich zmírnění  
+## Technické výzvy
+- **Riziko**: Nekonzistence dat mezi admin a frontend aplikací
+  **Zmírnění**: Použití sdílených typů a funkcí v balíčku `shared`
+  
+- **Riziko**: Rozdílná struktura dat mezi Strapi a Supabase
+  **Zmírnění**: Vytvoření adaptérů pro transformaci dat mezi různými formáty
+
+## Určení MVP
+- **Riziko**: Příliš ambiciózní MVP s mnoha funkcemi
+  **Zmírnění**: Zaměření na základní funkce - zobrazení pokojů a rezervační proces
+  
+- **Riziko**: Nedostatečné testování před nasazením
+  **Zmírnění**: Důkladné testování všech klíčových funkcí a uživatelských toků
+
+## Omezení zdrojů
+- **Riziko**: Nedostatek času na kompletní migraci
+  **Zmírnění**: Postupná migrace po částech, začínající nejdůležitějšími funkcemi
+  
+- **Riziko**: Složitost udržování dvou různých backendů během migrace
+  **Zmírnění**: Jasná dokumentace API a postupné nahrazování funkcí
+
+# Dodatek  
+## Výsledky výzkumu
+- Supabase poskytuje lepší škálovatelnost a nižší náklady než Strapi
+- Sdílení typů mezi frontend a admin aplikacemi zlepší konzistenci dat
+- Použití Next.js API routes pro middleware mezi Supabase a frontend aplikací umožní lepší kontrolu nad daty
+
+## Technické specifikace
+- **Next.js**: verze 14.0 nebo vyšší
+- **Supabase**: JS klient v nejnovější verzi
+- **TypeScript**: Striktní typování pro všechny komponenty a funkce
+- **Sdílené balíčky**: Použití pnpm workspace pro správu monorepa 
